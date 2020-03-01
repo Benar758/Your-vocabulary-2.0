@@ -156,10 +156,12 @@ namespace Your_vocabulary_2._0
                 MessageBox.Show("Такая группа уже существует!", Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            if (groupName.Trim() == string.Empty) return;
 
             MessageBox.Show("Группа добавлена", Title, MessageBoxButton.OK, MessageBoxImage.Information);
-            Dictionary.Groups.Add(new Group(groupName));
-            ListOfGroups.Items.Add(groupName);
+            Dictionary.Groups.Add(new Group(groupName.Trim()));
+            ListOfGroups.Items.Add(groupName.Trim());
+            NewGroupTextBox.Clear();
             Data.Save();
         }
 
@@ -218,33 +220,7 @@ namespace Your_vocabulary_2._0
         {
             if (e.Key == Key.Delete)
             {
-                string[] words = ListOfWords.SelectedItem.ToString().Split('.', '-');
-                string word = words[1];
-
-                Word wordObject = CurrentGroup[word];
-
-                ListOfWords.Items.Remove(ListOfWords.SelectedItem);
-                CurrentGroup.Words.Remove(wordObject);
-
-                Data.Save();
-
-                ListOfWords.Items.Clear();
-
-                var sortedWords = from g in Dictionary.Groups
-                                  where g.Name == CurrentGroup.Name
-                                  from w
-                                  in g.Words
-                                  orderby w.LearningProgress descending
-                                  select w;
-
-                int count = 1;
-
-                foreach (Word w in sortedWords)
-                {
-                    ListOfWords.Items.Add($"{count++}. {w._Word.TrimEnd(' ')} - {w.Translation.TrimStart(' ')}");
-                }
-
-                SetNumberOfWords();
+                DeleteWord();
             }
             else if (e.Key == Key.Space)
             {
@@ -271,6 +247,69 @@ namespace Your_vocabulary_2._0
             }
 
             InstructionFrame.Content = InstFrame;
+        }
+
+        private void DeleteGroupBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string groupName = ListOfGroups.SelectedItem.ToString();
+            if (groupName == "Разное") return;
+
+            var result = MessageBox.Show("Вы уверены?", Title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                Group group = Dictionary[groupName];
+                Dictionary.Groups.Remove(group);
+                ListOfGroups.SelectedItem = ListOfGroups.Items[0].ToString();
+                ListOfGroups.Items.Remove(groupName);
+                Data.Save();
+            }
+            else return;
+        }
+
+        private void DeleteWord()
+        {
+            string[] words = ListOfWords.SelectedItem.ToString().Split('.', '-');
+            string word = words[1];
+
+            Word wordObject = CurrentGroup[word];
+
+            var result = MessageBox.Show("Вы уверены?", Title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                ListOfWords.Items.Remove(ListOfWords.SelectedItem);
+                CurrentGroup.Words.Remove(wordObject);
+
+                Data.Save();
+
+                ListOfWords.Items.Clear();
+
+                var sortedWords = from g in Dictionary.Groups
+                                  where g.Name == CurrentGroup.Name
+                                  from w
+                                  in g.Words
+                                  orderby w.LearningProgress descending
+                                  select w;
+
+                int count = 1;
+
+                foreach (Word w in sortedWords)
+                {
+                    ListOfWords.Items.Add($"{count++}. {w._Word.TrimEnd(' ')} - {w.Translation.TrimStart(' ')}");
+                }
+
+                SetNumberOfWords();
+            }
+        }
+
+        private void DeleteWordMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DeleteWord();
+            }
+            catch { }
         }
     }
 }

@@ -33,7 +33,13 @@
                HorizontalAlignment="Center" Margin="61,-7,65,0"/>
 
         <ListBox x:Name="ListOfWords" Width="263" Height="110" HorizontalAlignment="Left" 
-                 VerticalAlignment="Bottom" FontSize="13" Background="BlanchedAlmond" BorderBrush="Green" KeyDown="ListOfWords_KeyDown"/>
+                 VerticalAlignment="Bottom" FontSize="13" Background="BlanchedAlmond" BorderBrush="Green" KeyDown="ListOfWords_KeyDown">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="DeleteWordMenuItem" Header="Удалить" Click="DeleteWordMenuItem_Click"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
 
         <StackPanel Grid.Row="1" Margin="5">
             <TextBlock x:Name="NumberOfWords" Text="Всего у вас слов: " FontSize="{StaticResource FontSize}"/>
@@ -41,8 +47,8 @@
         </StackPanel>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="70*"/>
+                <RowDefinition Height="30*"/>
             </Grid.RowDefinitions>
 
             <StackPanel>
@@ -51,6 +57,14 @@
                 <ComboBox x:Name="ListOfGroups" Height="30" VerticalAlignment="Top" 
                  BorderBrush="Green" Margin="5, 2, 5, 0" Cursor="Hand"
                  FontSize="15" SelectionChanged="ListOfGroups_SelectionChanged"/>
+                <Button x:Name="DeleteGroupBtn" 
+                        Content="Удалить группу"
+                        Margin="0,15,0,0"
+                        Width="100"
+                        Background="Red"
+                        Foreground="White"
+                        Cursor="Hand"
+                        Click="DeleteGroupBtn_Click"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal">
                 <Label Content="Группа: " VerticalAlignment="Bottom"/>
